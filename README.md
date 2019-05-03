@@ -21,7 +21,7 @@ It is an API that provides access to screen capture functions through an SSL Web
 
 ## Deployment
 
-The Python WSGI HTTP Server for Unix is recommended
+Gunicorn, a Python WSGI HTTP Server for Unix is recommended
 
 ```
 >>> gunicorn src:app
