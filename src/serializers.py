@@ -15,7 +15,7 @@ from screamshot import generate_bytes_img_django_wrap
 
 AUTHORIZED_WAIT_UNTIL_VALUE = [
     'load', 'domcontentloaded', 'networkidle0', 'networkidle2']
-SCREAMSHOT_PARAMETERS = ['url', 'width', 'height',
+SCREAMSHOT_PARAMETERS = ['width', 'height',
                          'wait_until', 'credentials', 'selector', 'wait_for']
 
 
@@ -32,9 +32,10 @@ class ScreenshotSerializer():
     .. warning:: ``data = dict()`` before calling ``is_valid``
     .. warning:: ``bytes_img = None`` before calling ``get_object``
     """
-    def __init__(self, raw_data):
+    def __init__(self, url, raw_data=None):
         # Public attributes
-        self.raw_data = raw_data
+        self.url = url
+        self.raw_data = raw_data if raw_data else {}
         self.data = dict()
         self.errors = []
         self.bytes_img = None
@@ -47,29 +48,22 @@ class ScreenshotSerializer():
     def _parse_raw_data(self):
         for key, val in self.raw_data.items():
             if key in SCREAMSHOT_PARAMETERS:
-                if key == 'url':
-                    self.data[key] = val
-                else:
-                    self.data['opt_param'][key] = val
+                self.data[key] = val
             else:
                 self.errors.append('Unknown parameter: "{0}"'.format(key))
-
-    def _validate_url(self):
-        if 'url' not in self.data:
-            self.errors.append('No url')
 
     def _validate_window_sizes(self):
         str_width = self.data.get('width')
         if str_width:
             try:
-                self.data['opt_param']['width'] = int(str_width)
+                self.data['width'] = int(str_width)
             except ValueError as _:
                 self.errors.append('Bad width')
 
         str_height = self.raw_data.get('height')
         if str_height:
             try:
-                self.data['opt_param']['height'] = int(str_height)
+                self.data['height'] = int(str_height)
             except ValueError as _:
                 self.errors.append('Bad height')
 
@@ -107,7 +101,6 @@ class ScreenshotSerializer():
             ``{'url': ..., 'opt_param': {...}}``
         """
         self._parse_raw_data()
-        self._validate_url()
         self._validate_window_sizes()
         self._validate_credentials()
         self._validate_wait_until()
@@ -128,7 +121,7 @@ class ScreenshotSerializer():
         if not self._is_valid_accessed:
             self.is_valid()
         if self._valid:
-            url = self.data['url']
+            url = self.url
             opt_param = self.data.get('opt_param', {})
             try:
                 self.bytes_img = generate_bytes_img_django_wrap(url, **opt_param)

@@ -1,7 +1,7 @@
 """
 Contains all the views.
 """
-from flask import request
+from flask import request, jsonify
 
 from .serializers import ScreenshotSerializer
 
@@ -33,6 +33,12 @@ def take_screenshot_view():
         be either load, domcontentloaded, networkidle0 or networkidle2
     :type wait_until: str or list(str)
     """
-    data = request.form.to_dict()
-    serializer = ScreenshotSerializer(data)
-    return serializer.serialize()
+    url = request.args.get('url')
+    if request.method == 'GET':
+        serializer = ScreenshotSerializer(url)
+        return serializer.serialize()
+    if request.method == 'POST':
+        data = request.form.to_dict()
+        serializer = ScreenshotSerializer(url, raw_data=data)
+        return serializer.serialize()
+    return jsonify({}), 400

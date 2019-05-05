@@ -11,4 +11,4 @@ app = Flask('Screamshot')
 
 # Routes
 app.add_url_rule('/api/take-screenshot',
-                 'take_screenshot', view_func=take_screenshot_view, methods=['POST'])
+                 'take_screenshot', view_func=take_screenshot_view, methods=['GET', 'POST'])
