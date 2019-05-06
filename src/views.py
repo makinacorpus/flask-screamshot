@@ -34,11 +34,11 @@ def take_screenshot_view():
     :type wait_until: str or list(str)
     """
     url = request.args.get('url')
-    if request.method == 'GET':
+    if url and request.method == 'GET':
         serializer = ScreenshotSerializer(url)
         return serializer.serialize()
-    if request.method == 'POST':
+    if url and request.method == 'POST':
         data = request.form.to_dict()
         serializer = ScreenshotSerializer(url, raw_data=data)
         return serializer.serialize()
-    return jsonify({}), 400
+    return jsonify({'errors': ['No url']}), 400

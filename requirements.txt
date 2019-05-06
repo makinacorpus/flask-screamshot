@@ -1,3 +1,2 @@
+screamshot==0.1.9
 Flask==1.0.2
-screamshot==0.1.8
-Pillow==6.0.0

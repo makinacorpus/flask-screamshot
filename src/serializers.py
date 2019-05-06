@@ -6,8 +6,6 @@ from io import BytesIO
 
 from flask import jsonify, send_file
 
-from pyppeteer.errors import NetworkError
-
 from PIL.Image import open as image_opener
 
 from screamshot import generate_bytes_img_django_wrap
@@ -121,14 +119,9 @@ class ScreenshotSerializer():
         if not self._is_valid_accessed:
             self.is_valid()
         if self._valid:
-            url = self.url
-            opt_param = self.data.get('opt_param', {})
-            try:
-                self.bytes_img = generate_bytes_img_django_wrap(url, **opt_param)
-            except NetworkError as exc:
-                self.errors.append(exc.args)
+            self.bytes_img = generate_bytes_img_django_wrap(self.url, **self.data)
         self._get_object_accessed = True
-        return None
+        return self.bytes_img
 
     @staticmethod
     def _generic_serializer(temp_file, bytes_obj):
