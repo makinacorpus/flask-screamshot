@@ -34,7 +34,6 @@ def take_screenshot_view():
     :type wait_until: str or list(str)
     """
     url = request.args.get('url')
-    print(request.method)
     if url and request.method == 'GET':
         serializer = ScreenshotSerializer(url)
         return serializer.serialize()
