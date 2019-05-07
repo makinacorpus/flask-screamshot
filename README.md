@@ -4,23 +4,6 @@ It is an API that provides access to screen capture functions through an SSL Web
 
 # How to run the server
 
-## Development
-
-### The first time
-
-```
->>> chmod +x ./run.py
->>> ./run.py
-```
-
-### When it is already setup
-
-```
->>> ./run.py
-```
-
-## Deployment
-
 Gunicorn, a Python WSGI HTTP Server for Unix is recommended
 
 ```
@@ -43,4 +26,49 @@ The documentation is accessible here.
 >>> from PIL import Image
 >>> img = Image.open(buf)
 >>> img.save('path/nom.png')
+```
+
+# How to run the tests
+
+## The first time
+
+1. Launch the web server:
+```
+>>> pip3 install -r requirements
+>>> pip3 install -r dev-requirements
+>>> cd tests/server
+>>> flask run
+```
+2. Launch the screamshot server:
+```
+>>> pip3 install gunicorn
+>>> gunicorn src:app
+```
+3. Launch the tests:
+```
+>>> pytest --cov=src --cov-report=term-missing -v
+```
+4. Launch pylint checks:
+```
+>>> pylint ./src
+```
+
+## When it is already setup
+
+1. Launch the web server:
+```
+>>> cd tests/server
+>>> flask run
+```
+2. Launch the screamshot server:
+```
+>>> gunicorn src:app
+```
+3. Launch the tests:
+```
+>>> pytest --cov=src --cov-report=term-missing -v
+```
+4. Launch pylint checks:
+```
+>>> pylint ./src
 ```
