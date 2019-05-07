@@ -91,7 +91,7 @@ class TestSerializerUnit(TestCase):
         self.assertEqual(serializer.errors, [])
         self.assertTrue(serializer.valid)
 
-    @mock.patch('src.serializers.generate_bytes_img_django_wrap')
+    @mock.patch('src.serializers.generate_bytes_img_wrap')
     def test_get_object(self, mock_generate_bytes_img_wrap):
         mock_generate_bytes_img_wrap.side_effect = lambda a: a
 
