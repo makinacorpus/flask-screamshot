@@ -1,6 +1,7 @@
 """
 Contains all the serializers.
 """
+from sys import exc_info
 from tempfile import NamedTemporaryFile
 from io import BytesIO
 
@@ -8,7 +9,8 @@ from flask import jsonify, send_file
 
 from PIL.Image import open as image_opener
 
-from screamshot import generate_bytes_img_django_wrap
+from screamshot import generate_bytes_img_wrap
+from screamshot.errors import BadUrl, BadSelector
 
 
 AUTHORIZED_WAIT_UNTIL_VALUE = [
@@ -106,7 +108,7 @@ class ScreenshotSerializer():
 
     def get_object(self):
         """
-        This class method calls ``generate_bytes_img_django_wrap`` function
+        This class method calls ``generate_bytes_img_wrap`` function
 
         :return: an image in the ``bytes`` object format if ``data`` is valid and ``None`` otherwise
 
@@ -116,7 +118,11 @@ class ScreenshotSerializer():
         if not self.valid:
             self.is_valid()
         if self.valid:
-            self.bytes_img = generate_bytes_img_django_wrap(self.url, **self.data)
+            try:
+                self.bytes_img = generate_bytes_img_wrap(self.url, **self.data)
+            except (BadUrl, BadSelector) as exc:
+                _, ex_value, _ = exc_info()
+                self.errors.append(str(ex_value))
         return self.bytes_img
 
     @staticmethod
