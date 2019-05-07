@@ -37,11 +37,7 @@ class ScreenshotSerializer():
         self.data = dict()
         self.errors = []
         self.bytes_img = None
-
-        # Private attributes
-        self._is_valid_accessed = False
-        self._valid = False
-        self._get_object_accessed = False
+        self.valid = None
 
     def _parse_raw_data(self):
         for key, val in self.raw_data.items():
@@ -102,10 +98,11 @@ class ScreenshotSerializer():
         self._validate_window_sizes()
         self._validate_credentials()
         self._validate_wait_until()
-        self._is_valid_accessed = True
-        if not self.errors:
-            self._valid = True
-        return self._valid
+        if self.errors:
+            self.valid = False
+        else:
+            self.valid = True
+        return self.valid
 
     def get_object(self):
         """
@@ -116,11 +113,10 @@ class ScreenshotSerializer():
         .. info:: If ``is_valid`` was not called, it will call it first
         .. info:: The image is saved in the ``bytes_img`` attribute
         """
-        if not self._is_valid_accessed:
+        if not self.valid:
             self.is_valid()
-        if self._valid:
+        if self.valid:
             self.bytes_img = generate_bytes_img_django_wrap(self.url, **self.data)
-        self._get_object_accessed = True
         return self.bytes_img
 
     @staticmethod
@@ -148,8 +144,7 @@ class ScreenshotSerializer():
         temp_file = NamedTemporaryFile(suffix='.png')
         if bytes_obj:
             return self._generic_serializer(temp_file, bytes_obj)
-        if not self._get_object_accessed:
-            self.get_object()
+        self.get_object()
         if self.bytes_img:
             return self._generic_serializer(temp_file, self.bytes_img)
         return jsonify({'errors': self.errors}), 400

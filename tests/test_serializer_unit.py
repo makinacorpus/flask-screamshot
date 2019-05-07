@@ -53,71 +53,59 @@ class TestSerializerUnit(TestCase):
         self.assertEqual(serializer.url, 'http://fake')
         self.assertEqual(serializer.data, {'width': 'coucou'})
         self.assertEqual(serializer.errors, ['Bad width'])
-        self.assertTrue(serializer._is_valid_accessed)
 
         serializer = ScreenshotSerializer('http://fake', raw_data={'height': 'coucou'})
         serializer.is_valid()
         self.assertEqual(serializer.url, 'http://fake')
         self.assertEqual(serializer.data, {'height': 'coucou'})
         self.assertEqual(serializer.errors, ['Bad height'])
-        self.assertTrue(serializer._is_valid_accessed)
 
         serializer = ScreenshotSerializer('http://fake', raw_data={'wait_until': ['OK']})
         serializer.is_valid()
         self.assertEqual(serializer.url, 'http://fake')
         self.assertEqual(serializer.data, {'wait_until': ['OK']})
         self.assertEqual(serializer.errors, ['Bad wait_until value'])
-        self.assertTrue(serializer._is_valid_accessed)
 
         serializer = ScreenshotSerializer('http://fake', raw_data={'credentials': {'username': 'test'}})
         serializer.is_valid()
         self.assertEqual(serializer.url, 'http://fake')
         self.assertEqual(serializer.data, {'credentials': {'username': 'test'}})
         self.assertEqual(serializer.errors, ['Bad credentials: a password must be specified'])
-        self.assertTrue(serializer._is_valid_accessed)
 
         serializer = ScreenshotSerializer('http://fake', raw_data={'credentials': {'password': 'test'}})
         serializer.is_valid()
         self.assertEqual(serializer.url, 'http://fake')
         self.assertEqual(serializer.data, {'credentials': {'password': 'test'}})
         self.assertEqual(serializer.errors, ['Bad credentials: a username must be specified'])
-        self.assertTrue(serializer._is_valid_accessed)
 
         serializer = ScreenshotSerializer('http://fake', raw_data={'credentials': {'token': 'test'}})
         serializer.is_valid()
         self.assertEqual(serializer.url, 'http://fake')
         self.assertEqual(serializer.data, {'credentials': {'token': 'test'}})
         self.assertEqual(serializer.errors, ['Bad credentials: "token_in_header" must be specified'])
-        self.assertTrue(serializer._is_valid_accessed)
 
         serializer = ScreenshotSerializer('http://fake', raw_data={})
         serializer.is_valid()
         self.assertEqual(serializer.url, 'http://fake')
         self.assertEqual(serializer.data, {})
         self.assertEqual(serializer.errors, [])
-        self.assertTrue(serializer._is_valid_accessed)
-        self.assertTrue(serializer._valid)
+        self.assertTrue(serializer.valid)
 
     @mock.patch('src.serializers.generate_bytes_img_django_wrap')
     def test_get_object(self, mock_generate_bytes_img_wrap):
         mock_generate_bytes_img_wrap.side_effect = lambda a: a
 
         serializer = ScreenshotSerializer('http://fake')
-        serializer._is_valid_accessed = True
         serializer.get_object()
-        self.assertTrue(serializer._get_object_accessed)
-        self.assertEqual(serializer.bytes_img, None)
+        self.assertEqual(serializer.bytes_img, 'http://fake')
 
         serializer = ScreenshotSerializer('http://fake')
-        serializer._is_valid_accessed = True
-        serializer._valid = True
+        serializer.valid = True
         serializer.get_object()
-        self.assertTrue(serializer._get_object_accessed)
         self.assertEqual(serializer.bytes_img, 'http://fake')
 
         serializer = ScreenshotSerializer('http://fake')
         serializer.get_object()
-        self.assertTrue(serializer._get_object_accessed)
         self.assertEqual(serializer.bytes_img, 'http://fake')
 
     @mock.patch('src.serializers.BytesIO')
