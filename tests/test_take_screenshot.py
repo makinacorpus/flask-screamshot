@@ -7,7 +7,7 @@ import numpy as np
 
 from requests import get, post
 
-from screamshot import bytes_to_png
+from screamshot import bytes_to_file
 
 
 def _rmsd(img1, img2):
@@ -28,8 +28,10 @@ class TestTakeScreenshot(TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertIsInstance(request.content, bytes)
 
-        bytes_to_png(request.content, 'test_simple_get_take_screenshot_request.png')
-        screenshot_img = Image.open('test_simple_get_take_screenshot_request.png')
+        bytes_to_file(request.content,
+                      'test_simple_get_take_screenshot_request.png')
+        screenshot_img = Image.open(
+            'test_simple_get_take_screenshot_request.png')
         img = Image.open('tests/server/static/images/600_800_index_page.png')
         self.assertTrue(_is_same_image(screenshot_img, img))
         remove('test_simple_get_take_screenshot_request.png')
@@ -41,8 +43,11 @@ class TestTakeScreenshot(TestCase):
         self.assertEqual(request.status_code, 200)
         self.assertIsInstance(request.content, bytes)
 
-        bytes_to_png(request.content, 'test_simple_post_take_screenshot_request.png')
-        screenshot_img = Image.open('test_simple_post_take_screenshot_request.png')
-        img = Image.open('tests/server/static/images/aww_dog.jpg').convert('RGBA')
+        bytes_to_file(request.content,
+                      'test_simple_post_take_screenshot_request.png')
+        screenshot_img = Image.open(
+            'test_simple_post_take_screenshot_request.png')
+        img = Image.open(
+            'tests/server/static/images/aww_dog.jpg').convert('RGBA')
         self.assertTrue(_is_same_image(screenshot_img, img))
         remove('test_simple_post_take_screenshot_request.png')
